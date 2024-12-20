@@ -39,7 +39,7 @@ public class Block {
   /**
    * An integer byte buffer for the class to use
    */
-  private static ByteBuffer intByeBuffer = ByteBuffer.allocate(Integer.BYTES);
+  private static ByteBuffer intByteBuffer = ByteBuffer.allocate(Integer.BYTES);
   /**
    * A long byte buffer for the class to use
    */
@@ -105,7 +105,29 @@ public class Block {
    * stored in the block.
    */
   void computeHash() {
-    
+    byte[] numbuff = Block.intByteBuffer.putInt(this.number).array();
+    Block.intByteBuffer.clear();
+    byte[] tranbuffT = this.transaction.getTarget().getBytes();
+    byte[] tranbuffS = this.transaction.getSource().getBytes();
+    byte[] tranbuffA = Block.intByteBuffer.putInt(this.transaction.getAmount()).array();
+    Block.intByteBuffer.clear();
+    Hash previous = this.prevHash;
+    if (previous != null) {
+      byte[] hashbuff = previous.getBytes();
+      mess.update(hashbuff);
+    } //if
+    long n = this.nonce;
+    byte[] noncebuff = Block.longByteBuffer.putLong(n).array();
+
+    mess.update(numbuff);
+    mess.update(tranbuffT);
+    mess.update(tranbuffS);
+    mess.update(tranbuffA);
+    mess.update(noncebuff);
+
+    byte[] output = mess.digest();
+
+    this.hash = new Hash(output);
   } // computeHash()
 
   private void mine(HashValidator check) {

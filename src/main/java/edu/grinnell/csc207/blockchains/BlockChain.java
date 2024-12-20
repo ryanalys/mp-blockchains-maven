@@ -6,13 +6,28 @@ import java.util.NoSuchElementException;
 /**
  * A full blockchain.
  *
- * @author Your Name Here
+ * @author Alyssa Ryan
  */
 public class BlockChain implements Iterable<Transaction> {
   // +--------+------------------------------------------------------
   // | Fields |
   // +--------+
-
+  /**
+   * The first block in the chain.
+   */
+  private Node<Block> first;
+  /**
+   * The last block in the chain.
+   */
+  private Node<Block> last;
+  /**
+   * The number of blocks in the chain.
+   */
+  private int size;
+  /**
+   * The validator for the chain
+   */
+  private HashValidator val;
   // +--------------+------------------------------------------------
   // | Constructors |
   // +--------------+
@@ -24,7 +39,10 @@ public class BlockChain implements Iterable<Transaction> {
    *   The validator used to check elements.
    */
   public BlockChain(HashValidator check) {
-    // STUB
+    this.first = null;
+    this.last = null;
+    this.size = 0;
+    this.val = check;
   } // BlockChain(HashValidator)
 
   // +---------+-----------------------------------------------------
@@ -45,7 +63,8 @@ public class BlockChain implements Iterable<Transaction> {
    * @return a new block with correct number, hashes, and such.
    */
   public Block mine(Transaction t) {
-    return new Block(10, t, new Hash(new byte[] {7}), 11);       // STUB
+    Block newBlock = new Block(size + 1, t, getHash(), this.val);
+    return newBlock;
   } // mine(Transaction)
 
   /**
@@ -54,7 +73,7 @@ public class BlockChain implements Iterable<Transaction> {
    * @return the number of blocks in the chain, including the initial block.
    */
   public int getSize() {
-    return 2;   // STUB
+    return size;
   } // getSize()
 
   /**
@@ -68,7 +87,16 @@ public class BlockChain implements Iterable<Transaction> {
    *   hash is incorrect.
    */
   public void append(Block blk) {
-    // STUB
+    if (first == null) {
+      Node<Block> newNode = new Node<Block>(blk);
+      this.first = newNode;
+      this.last = newNode;
+    } else {
+      Node<Block> newNode = new Node<Block>(blk);
+      newNode.setNext(this.first);
+      this.first = newNode;
+    } //if
+    this.size++;
   } // append()
 
   /**
@@ -79,7 +107,16 @@ public class BlockChain implements Iterable<Transaction> {
    *   is removed).
    */
   public boolean removeLast() {
-    return true;        // STUB
+    if (size <= 1) {
+      return false;
+    } else {
+      Transaction lastTrans = this.last.getData().getTransaction();
+      //process transaction STUB
+      this.last = this.last.getPrev();
+      this.last.setNext(null);
+      this.size--;
+      return true;
+    }
   } // removeLast()
 
   /**
@@ -88,7 +125,11 @@ public class BlockChain implements Iterable<Transaction> {
    * @return the hash of the last sblock in the chain.
    */
   public Hash getHash() {
-    return new Hash(new byte[] {2, 0, 7});   // STUB
+    if (this.last == null) {
+      return null;
+    } else {
+      return this.last.getData().getHash();
+    } //if
   } // getHash()
 
   /**
@@ -100,7 +141,13 @@ public class BlockChain implements Iterable<Transaction> {
    * @return true if the blockchain is correct and false otherwise.
    */
   public boolean isCorrect() {
-    return true;        // STUB
+    BlockChain checker = new BlockChain(this.val);
+    Iterator<Block> ite = this.blocks();
+    while (ite.hasNext()) {
+      Block b = ite.next();
+      //check val
+    }
+    return false;
   } // isCorrect()
 
   /**

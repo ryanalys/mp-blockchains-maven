@@ -3,7 +3,7 @@ package edu.grinnell.csc207.blockchains;
 /**
  * Encapsulated hashes.
  *
- * @author Your Name Here
+ * @author Alyssa Ryan
  * @author Samuel A. Rebelsky
  */
 public class Hash {
