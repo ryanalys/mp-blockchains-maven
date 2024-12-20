@@ -1,9 +1,14 @@
 package edu.grinnell.csc207.blockchains;
 
+import java.nio.ByteBuffer;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Random;
+
 /**
  * Blocks to be stored in blockchains.
  *
- * @author Your Name Here
+ * @author Alyssa Ryan
  * @author Samuel A. Rebelsky
  */
 public class Block {
@@ -12,15 +17,37 @@ public class Block {
   // +--------+
 
   /**
+   * The previous hash.
+   */
+  private Hash prevHash;
+  /**
+   * The current has of this block.
+   */
+  private Hash hash;
+  /**
    * The transaction.
    */
   Transaction transaction;
-
+  /**
+   * The number this current block is.
+   */
+  private int number;
   /**
    * The nonce.
    */
   long nonce;
-
+  /**
+   * An integer byte buffer for the class to use
+   */
+  private static ByteBuffer intByeBuffer = ByteBuffer.allocate(Integer.BYTES);
+  /**
+   * A long byte buffer for the class to use
+   */
+  private static ByteBuffer longByteBuffer = ByteBuffer.allocate(Long.BYTES);
+  /**
+   * Message digest to use throughout the class
+   */
+  private static MessageDigest mess;
   // +--------------+------------------------------------------------
   // | Constructors |
   // +--------------+
@@ -41,7 +68,12 @@ public class Block {
    */
   public Block(int num, Transaction transaction, Hash prevHash,
       HashValidator check) {
-    // STUB
+    this.number = num;
+    this.transaction = transaction;
+    this.prevHash = prevHash;
+    if (check != null) {
+      this.mine(check);
+    } //if
   } // Block(int, Transaction, Hash, HashValidator)
 
   /**
@@ -57,7 +89,11 @@ public class Block {
    *   The nonce of the block.
    */
   public Block(int num, Transaction transaction, Hash prevHash, long nonce) {
-    // STUB
+    this.number = num;
+    this.transaction = transaction;
+    this.prevHash = prevHash;
+    this.nonce = nonce;
+    this.computeHash();
   } // Block(int, Transaction, Hash, long)
 
   // +---------+-----------------------------------------------------
@@ -69,8 +105,14 @@ public class Block {
    * stored in the block.
    */
   void computeHash() {
-    // STUB
+    
   } // computeHash()
+
+  private void mine(HashValidator check) {
+    if (hash != null && check.isValid(hash)) {
+      return;
+    } //if
+  } //mine(HashValidator)
 
   // +---------+-----------------------------------------------------
   // | Methods |
@@ -82,7 +124,7 @@ public class Block {
    * @return the number of the block.
    */
   public int getNum() {
-    return 0;   // STUB
+    return this.number;
   } // getNum()
 
   /**
@@ -91,7 +133,7 @@ public class Block {
    * @return the transaction.
    */
   public Transaction getTransaction() {
-    return new Transaction("Here", "There", 0); // STUB
+    return this.transaction;
   } // getTransaction()
 
   /**
@@ -100,7 +142,7 @@ public class Block {
    * @return the nonce.
    */
   public long getNonce() {
-    return 0;   // STUB
+    return this.nonce;
   } // getNonce()
 
   /**
@@ -109,7 +151,7 @@ public class Block {
    * @return the hash of the previous block.
    */
   Hash getPrevHash() {
-    return new Hash(new byte[] {0});  // STUB
+    return this.prevHash;
   } // getPrevHash
 
   /**
@@ -118,7 +160,7 @@ public class Block {
    * @return the hash of the current block.
    */
   Hash getHash() {
-    return new Hash(new byte[] {0});  // STUB
+    return this.hash;
   } // getHash
 
   /**
@@ -127,6 +169,7 @@ public class Block {
    * @return a string representation of the block.
    */
   public String toString() {
-    return "";  // STUB
+    String output = "[" + this.number + ", Transaction: " + this.transaction + ", Hash: " + this.hash + ", Previous Hash: " + this.prevHash + " ]";
+    return output;
   } // toString()
 } // class Block
